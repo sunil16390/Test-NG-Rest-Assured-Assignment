@@ -12,6 +12,7 @@ import resuable.CreateRequestBody;
 
 import java.io.FileInputStream;
 
+import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 
 public class Assignment003 {
@@ -27,7 +28,7 @@ public class Assignment003 {
     }
 
     @Parameters({"requestURL"})
-    @Test
+    @Test(priority=1)
     public void createBankEmpData(String requestURL) {
         Response res = null;
         String name = null;
@@ -82,6 +83,73 @@ public class Assignment003 {
             Assert.assertEquals(salaryInResponse,salary);
             System.out.println("Value of Salary in response is: "+salaryInResponse);
         }
+
+    }
+
+    @Parameters({"requestURL"})
+    @Test(priority=2)
+    public void putCallToUpdateAddressOfBankEmployeeDetails_Validation(String requestURL, String name, String year, String dob, String UpdatedAddress, String salary){
+
+        String put_apiPathOfCreatedBankEmployee = requestURL+"/"+idFromResponse;
+        String get_PathOfCreatedBankEmployee = requestURL+"?id="+idFromResponse;
+        Response response = get(get_PathOfCreatedBankEmployee);
+        name = response.getBody().jsonPath().getString("name");
+        year = response.getBody().jsonPath().getString("data.year");
+        dob = response.getBody().jsonPath().getString("data.DOB");
+        UpdatedAddress = "Agra 34526";
+        salary = response.getBody().jsonPath().getString("data.Salary");
+        Response res = given()
+                .contentType(ContentType.JSON)
+                .body(RJB.createBankEmployeeRequestBody(name,year,dob,UpdatedAddress,salary))
+                .when()
+                .put(put_apiPathOfCreatedBankEmployee);
+
+        //validate the status code
+        String status_code = String.valueOf(res.statusCode()); // converting response.statusCode from int to String
+        Assert.assertEquals(status_code,"200");
+        System.out.println("The status code after put is: "+status_code);
+        //validate Address
+        String addressInResponse = res.getBody().jsonPath().getString("data.Address");
+        //System.out.println("Response after Put Call: "+res.asString());
+        Assert.assertEquals(addressInResponse,UpdatedAddress);
+        System.out.println("Value of UpdatedAddress in response is: "+addressInResponse);
+
+        //Again a GET call to validate new Address
+
+        response = get(get_PathOfCreatedBankEmployee);
+
+        //validate the status code
+        String newStatus_code = String.valueOf(response.statusCode()); // converting response.statusCode from int to String
+        Assert.assertEquals(newStatus_code,"200");
+        System.out.println("The status code after get call is: "+newStatus_code);
+
+        //validate Address
+        String newAddressInResponse = response.getBody().jsonPath().getString("data.Address");
+        Assert.assertEquals(addressInResponse,UpdatedAddress);
+        System.out.println("Value of new Address in response is: "+newAddressInResponse);
+
+    }
+    @Parameters({"requestURL"})
+    @Test(priority=3)
+    public void delete_BankEmployee_record(String requestURL){
+
+        String delete_apiPathOfBankEmployee = requestURL+"/"+idFromResponse;
+        Response res = given()
+                .contentType(ContentType.JSON)
+                .when()
+                .delete(delete_apiPathOfBankEmployee);
+
+        //validate the status code
+        String newStatus_code = String.valueOf(res.statusCode()); // converting response.statusCode from int to String
+        Assert.assertEquals(newStatus_code,"200");
+        System.out.println("The status code after delete call is: "+newStatus_code);
+
+        //validate the response message after delete
+        String expectedResponseMessage = "{\"message\":\"Object with id = "+idFromResponse+" has been deleted.\"}";
+        String actualResponseMsg = res.asString();
+        Assert.assertEquals(actualResponseMsg, expectedResponseMessage);
+        System.out.println("Expected message after delete"+expectedResponseMessage);
+        System.out.println("Response message after delete: "+actualResponseMsg);
 
     }
 
