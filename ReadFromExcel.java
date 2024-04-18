@@ -30,7 +30,7 @@ public class ReadFromExcel {
             Sheet sheet = workbook.getSheet("BankEmployeeData");
             DataFormatter formatter = new DataFormatter();
             value = formatter.formatCellValue(sheet.getRow(rowNum).getCell(colNum)).toString();
-            System.out.println("value: " + value);
+           // System.out.println("value: " + value);
         }
         catch (Exception e) {
             System.out.println("Exception Message: "+e.getMessage());
