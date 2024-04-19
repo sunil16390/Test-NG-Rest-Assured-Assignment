@@ -110,30 +110,7 @@ public class Assignment004 {
             System.out.println(e);
         }
     }
-    public void readTable(){
-        try {
-            //URL, DB username and DB password
-            connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306", "sunilk", "password");
-            if (connection != null) {
-                System.out.println("Database server is connected");
-            }
-            Statement statement = connection.createStatement(); // creating statement obj
-            statement.execute(" use CompaniesRecord");//using that statement obj, to use database
-            System.out.println("You are using CompaniesRecord DB ");
-            String id = "5";
-            ResultSet Sqlresult = statement.executeQuery("select ceoName from Companies_DATA where id =\""+id+"\";");
-            while (Sqlresult.next())
-            {
-                String runtimeName = Sqlresult.getString("ceoName");
-                System.out.println("if id is " +id+ " then CEO name is: " +runtimeName);
-            }
-        }
-        catch (Exception e)
-        {
-            System.out.println(e);
-        }
-
-    }
+    
 
 }
 
